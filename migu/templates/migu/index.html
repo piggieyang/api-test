@@ -1,0 +1,226 @@
+{% extends "migu/base_site.html" %}
+
+{% block navbar_collapse %}
+            <ul class="nav navbar-nav">
+                <li><a href="#query-form">接口请求</a></li>
+                <li><a href="#decrypt-form">解密数据</a></li>
+                <li><a href="#encrypt-form">生成加密请求</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="disabled"><a href="/migu/module/">模块测试</a></li>
+                <li><a href="/migu/multi/">批量请求</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">下载<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenuDivider">
+                        <li class="dropdown-header">Python脚本</li>
+                        <li><a href="/migu/download/python/?model=mobile">手机版接口</a></li>
+                        <li><a href="/migu/download/python/?model=tv">电视版接口</a></li>
+                        <li><a href="/migu/download/python/?model=plugin">插件接口</a></li>
+                        <li><a href="/migu/download/python/?model=open">开放平台接口</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">Jmeter测试计划</li>
+                        <li><a href="/migu/download/jmeter/?model=mobile">手机版接口</a></li>
+                        <li><a href="/migu/download/jmeter/?model=tv">电视版接口</a></li>
+                        <li><a href="/migu/download/jmeter/?model=plugin">插件接口</a></li>
+                        <li><a href="/migu/download/jmeter/?model=open">开放平台接口</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">数据表</li>
+                        <li><a href="/migu/download/sql/?model=mobile">手机版接口</a></li>
+                        <li><a href="/migu/download/sql/?model=tv">电视版接口</a></li>
+                        <li><a href="/migu/download/sql/?model=plugin">插件接口</a></li>
+                        <li><a href="/migu/download/sql/?model=open">开放平台接口</a></li>
+                        <li><a href="/migu/download/sql/results/">测试结果</a></li>
+                    </ul>
+                </li>
+            </ul>
+{% endblock navbar_collapse %}
+
+{% block page_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h1>咪咕爱唱接口测试</h1>
+                <p class="help-block">接口版本下拉选项中没有对应的版本号时，可以在选择框后面的输入框手动添加</p>
+                <div id="query-form" class="well">
+                    <h2>接口请求</h2>
+                    <form id="query" method="post" action="/migu/query/result/" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="queryServer">接口地址</label>
+                            <select name="server" id="queryServer">
+                                {% for server in servers %}
+                                    <option id="server{{ server.id }}" value="{{ server.id }}">{{ server.name }}</option>
+                                {% empty %}
+                                    <option>请先添加接口地址</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="queryVersion">接口版本</label>
+                            <select name="version" id="queryVersion">
+                                <option value="2.0">2.0</option>
+                                <option value="3.0">3.0</option>
+                                <option value="4.0">4.0</option>
+                                <option value="5.0">5.0</option>
+                            </select>
+                            <script type="text/javascript">
+                                var query_version = new combox("query_version", "queryVersion");
+                                query_version.init();
+                            </script>
+                        </div>
+                        <div class="form-group">
+                            <label for="queryService">接口名称</label>
+                            <input type="text" name="service" id="queryService" placeholder="请输入接口名..."  onkeyup="getSuggestServices('query')">
+                            <button type="button" class="btn btn-default" onclick="getSuggestData('query')">获取默认值</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="queryData">接口请求</label>
+                            <textarea class="form-control" rows="10" name="data" id="queryData" placeholder="请输入接口请求参数data..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="queryFile">请求文件</label>
+                            <input type="file" name="files" id="queryFile" multiple>
+                        </div>
+                        <button type="submit" class="btn btn-default">提交</button>
+                    </form>
+                </div>
+                <div id="decrypt-form" class="well">
+                    <h2>解密数据</h2>
+                    <form id="decrypt" method="post" action="/migu/decrypt/result/">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="decryptData">加密数据</label>
+                            <textarea class="form-control" rows="10" name="data" id="decryptData" placeholder="请输入加密数据data(或body)..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="decryptSalt">解密参数</label>
+                            <input type="text" name="salt" id="decryptSalt" placeholder="请输入解密参数salt...">
+                        </div>
+                        <button type="submit" class="btn btn-default">提交</button>
+                    </form>
+                </div>
+                <div id="encrypt-form" class="well">
+                    <h2>生成加密请求</h2>
+                    <form id="encrypt" method="post" action="/migu/encrypt/result/">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="encryptService">接口名称</label>
+                            <input type="text" name="service" id="encryptService" placeholder="请输入接口名..."  onkeyup="getSuggestServices('encrypt')">
+                            <button type="button" class="btn btn-default" onclick="getSuggestData('encrypt')">获取默认值</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="encryptVersion">接口版本</label>
+                            <select name="version" id="encryptVersion">
+                                <option value="2.0">2.0</option>
+                                <option value="3.0">3.0</option>
+                                <option value="4.0">4.0</option>
+                                <option value="5.0">5.0</option>
+                            </select>
+                            <script type="text/javascript">
+                                var encrypt_version = new combox("encrypt_version", "encryptVersion");
+                                encrypt_version.init();
+                            </script>
+                        </div>
+                        <div class="form-group">
+                            <label for="encryptData">接口请求</label>
+                            <textarea class="form-control" rows="10" name="data" id="encryptData" placeholder="请输入接口请求参数data..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-default">提交</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="sidebar-module sidebar-module-inset">
+                    <h2>接口管理</h2>
+                    <ul>
+                        <li><a href="/admin/migu/mobileservice/">手机接口列表</a></li>
+                        <li><a href="/admin/migu/tvservice/">电视版接口列表</a></li>
+                        <li><a href="/admin/migu/pluginservice/">手机插件接口列表</a></li>
+                        <li><a href="/admin/migu/openservice/">开放平台接口列表</a></li>
+                    </ul>
+                </div>
+                <div class="sidebar-module sidebar-module-inset">
+                    <h2>其他</h2>
+                    <ul>
+                        <li><a href="/admin/migu/server/">接口地址列表</a></li>
+                        <li><a href="/admin/migu/result/">执行结果</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock page_content %}
+
+{% block custom_js %}
+<script type="text/javascript">
+<!--
+/**
+ * Created by ryan on 2015/7/19.
+ * 初始化ajax
+ */
+
+// var csrftoken = $.cookie('csrftoken');
+var csrftoken = "{{ csrf_token }}";
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+$.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    },
+    async: true,
+    global: false,
+    type: "POST",
+    timeout: 1000
+});
+
+function getSuggestServices(formid) {
+    console.log(formid);
+    $.ajax({
+        url: "/migu/ajax/services/",
+        data: {
+            service: $("#" + formid + " #" + formid + "Service").val()
+        },
+        dataType: "json",
+        success: function(json) {
+            console.log(json);
+            if (json.length == 1) {
+                getSuggestData(formid)
+            } else {
+                $("#" + formid + " #" + formid + "Data").val(JSON.stringify(json, undefined, 4));
+            }
+        },
+        error: function(json) {
+            console.log(json);
+            $("#" + formid + " #" + formid + "Data").val("{}");
+        }
+    });
+}
+
+function getSuggestData(formid) {
+    console.log(formid);
+    $.ajax({
+        url: "/migu/ajax/service/data/",
+        data: {
+            version: $("#" + formid + " #" + formid + "Version").val(),
+            service: $("#" + formid + " #" + formid + "Service").val()
+        },
+        dataType: "json",
+        success: function(json) {
+            console.log(json);
+            $("#" + formid + " #" + formid + "Data").val(JSON.stringify(json, undefined, 4));
+        },
+        error: function(json) {
+            console.log(json);
+            $("#" + formid + " #" + formid + "Data").val("{}");
+        }
+    });
+}
+//-->
+</script>
+{% endblock custom_js %}

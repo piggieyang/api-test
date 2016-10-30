@@ -1,0 +1,82 @@
+{% extends "migu/base_site.html" %}
+{% block page_brand_url %}/migu/{% endblock page_brand_url %}
+{% block page_brand_title %}咪咕爱唱{% endblock page_brand_title %}
+
+
+{% block navbar_collapse %}
+            <ul class="nav navbar-nav">
+                <li><a href="/admin/migu/server/{{ server.id }}/">{{ server.name }}</a></li>
+                <li><a href="#">数目:&nbsp;{{ results|length }}</a></li>
+                <li class="active"><a href="#">耗时:&nbsp;{{ execute_time }}</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="disabled"><a href="/migu/module/">模块测试</a></li>
+                <li><a href="/migu/multi/">批量请求</a></li>
+                <li class="dropdown disabled">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">下载<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenuDivider">
+                        <li class="dropdown-header">Python脚本</li>
+                        <li><a href="/migu/download/python/?model=mobile">手机版接口</a></li>
+                        <li><a href="/migu/download/python/?model=tv">电视版接口</a></li>
+                        <li><a href="/migu/download/python/?model=plugin">插件接口</a></li>
+                        <li><a href="/migu/download/python/?model=open">开放平台接口</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">Jmeter测试计划</li>
+                        <li><a href="/migu/download/jmeter/?model=mobile">手机版接口</a></li>
+                        <li><a href="/migu/download/jmeter/?model=tv">电视版接口</a></li>
+                        <li><a href="/migu/download/jmeter/?model=plugin">插件接口</a></li>
+                        <li><a href="/migu/download/jmeter/?model=open">开放平台接口</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">数据表</li>
+                        <li><a href="/migu/download/sql/?model=mobile">手机版接口</a></li>
+                        <li><a href="/migu/download/sql/?model=tv">电视版接口</a></li>
+                        <li><a href="/migu/download/sql/?model=plugin">插件接口</a></li>
+                        <li><a href="/migu/download/sql/?model=open">开放平台接口</a></li>
+                        <li><a href="/migu/download/sql/results/">测试结果</a></li>
+                    </ul>
+                </li>
+            </ul>
+{% endblock navbar_collapse %}
+
+
+{% block page_content %}
+    <div class="container-fluid">
+        <h1>咪咕爱唱多接口测试</h1>
+        <div class=" table-responsive">
+            <table class="table table-hover table-bordered table-condensed">
+                <caption>
+                    测试结果:&nbsp;{{ server.name }}&nbsp;&nbsp;{{ server.address }}&nbsp;&nbsp;执行总耗时:&nbsp;{{ execute_time }}</caption>
+                <thead>
+                    <tr>
+                        <th class="col-md-1">接口</th>
+                        <th>版本</th>
+                        <th class="col-md-4">请求包</th>
+                        <th>状态码</th>
+                        <th class="col-md-6">返回结果</th>
+                        <th>查看</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    {% if result %}
+                    <tr>
+                        <td class="col-md-1">{{ result.service }}</td>
+                        <td>{{ result.version }}</td>
+                        <td class="col-md-4">{{ result.data }}</td>
+                        <td>{{ result.status }}</td>
+                        <td class="col-md-6">{{ result.result }}</td>
+                        <td><a href="/admin/migu/result/{{ result.id }}/">详情</a></td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3">执行接口数:&nbsp;{{ results|length }}</td>
+                        <td colspan="3">执行时间:&nbsp;{{ create }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div> 
+{% endblock page_content %}

@@ -1,0 +1,255 @@
+{% extends "migu/base_site.html" %}
+
+{% block custom_styles_css %}
+    <style type="text/css">
+    select, input {
+        width: 15em;
+        height: 2em;
+    }
+    textarea {
+        max-width: 100%;
+    }
+    input.checkbox {
+        width: inherit;
+        height: inherit;
+    }
+    </style>
+{% endblock custom_styles_css %}
+
+{% block navbar_collapse %}
+            <ul class="nav navbar-nav">
+                <li><a href="#repeat-form">重复测试</a></li>
+                <li><a href="#multi-form">批量测试</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="disabled"><a href="/migu/module/">模块测试</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">下载<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenuDivider">
+                        <li class="dropdown-header">Python脚本</li>
+                        <li><a href="/migu/download/python/?model=mobile">手机版接口</a></li>
+                        <li><a href="/migu/download/python/?model=tv">电视版接口</a></li>
+                        <li><a href="/migu/download/python/?model=plugin">插件接口</a></li>
+                        <li><a href="/migu/download/python/?model=open">开放平台接口</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">Jmeter测试计划</li>
+                        <li><a href="/migu/download/jmeter/?model=mobile">手机版接口</a></li>
+                        <li><a href="/migu/download/jmeter/?model=tv">电视版接口</a></li>
+                        <li><a href="/migu/download/jmeter/?model=plugin">插件接口</a></li>
+                        <li><a href="/migu/download/jmeter/?model=open">开放平台接口</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">数据表</li>
+                        <li><a href="/migu/download/sql/?model=mobile">手机版接口</a></li>
+                        <li><a href="/migu/download/sql/?model=tv">电视版接口</a></li>
+                        <li><a href="/migu/download/sql/?model=plugin">插件接口</a></li>
+                        <li><a href="/migu/download/sql/?model=open">开放平台接口</a></li>
+                        <li><a href="/migu/download/sql/results/">测试结果</a></li>
+                    </ul>
+                </li>
+            </ul>
+{% endblock navbar_collapse %}
+
+{% block page_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h1>咪咕爱唱单一接口测试</h1>
+                <div id="repeat-form" class="well">
+                    <h2>相同参数重复请求</h2>
+                    <form id="repeat" method="post" action="/migu/repeat/result/" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="repeatServer">接口地址</label>
+                            <select name="server" id="repeatServer">
+                                {% for server in servers %}
+                                    <option id="server{{ server.id }}" value="{{ server.id }}">{{ server.name }}</option>
+                                {% empty %}
+                                    <option>请先添加接口地址</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="repeatVersion">接口版本</label>
+                            <select name="version" id="repeatVersion">
+                                <option value="2.0">2.0</option>
+                                <option value="3.0">3.0</option>
+                                <option value="4.0">4.0</option>
+                                <option value="5.0">5.0</option>
+                            </select>
+                            <script type="text/javascript">
+                                var repeat_version = new combox("repeat_version", "repeatVersion");
+                                repeat_version.init();
+                            </script>
+                        </div>
+                        <div class="form-group">
+                            <label for="repeatService">接口名称</label>
+                            <input type="text" name="service" id="repeatService" placeholder="请输入接口名..."  onkeyup="getSuggestServices('repeat')">
+                            <button type="button" class="btn btn-default" onclick="getSuggestData('repeat')">获取默认值</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="repeatData">接口请求</label>
+                            <textarea class="form-control" rows="10" name="data" id="repeatData" placeholder="请输入接口请求参数data..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="repeatFile">请求文件</label>
+                            <input type="file" name="files" id="repeatFile" multiple disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="repeatTime">重复次数</label>
+                            <input type="number" name="repeat" id="repeatTime" placeholder="请输入重复次数..." value="1" min="1" max="100">
+                            <label class="checkbox-inline">
+                                <input class="checkbox" type="checkbox" name="thread" value="true">并发测试
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-default">提交</button>
+                    </form>
+                </div>
+                <div id="multi-form" class="well">
+                    <h2>变更参数请求</h2>
+                    <p class="help-block">目前仅支持单一参数变化</p>
+                    <form id="multi" method="post" action="/migu/multi/result/" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="multiServer">接口地址</label>
+                            <select name="server" id="multiServer">
+                                {% for server in servers %}
+                                    <option id="server{{ server.id }}" value="{{ server.id }}">{{ server.name }}</option>
+                                {% empty %}
+                                    <option>请先添加接口地址</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="multiVersion">接口版本</label>
+                            <select name="version" id="multiVersion">
+                                <option value="2.0">2.0</option>
+                                <option value="3.0">3.0</option>
+                                <option value="4.0">4.0</option>
+                                <option value="5.0">5.0</option>
+                            </select>
+                            <script type="text/javascript">
+                                var multi_version = new combox("multi_version", "multiVersion");
+                                multi_version.init();
+                            </script>
+                        </div>
+                        <div class="form-group">
+                            <label for="multiService">接口名称</label>
+                            <input type="text" name="service" id="multiService" placeholder="请输入接口名..."  onkeyup="getSuggestServices('multi')">
+                            <button type="button" class="btn btn-default" onclick="getSuggestData('multi')">获取默认值</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="multiData">接口请求</label>
+                            <textarea class="form-control" rows="10" name="data" id="multiData" placeholder="请输入接口请求参数data..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="multiParam">变化参数</label>
+                            <textarea class="form-control" rows="10" name="params" id="multiParam" placeholder="请输入参数变化列表内容..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="multiFile">请求文件</label>
+                            <input type="file" name="files" id="multiFile" multiple disabled>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input class="checkbox" type="checkbox" name="thread" value="true">并发测试
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-default">提交</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="sidebar-module sidebar-module-inset">
+                    <h2>接口管理</h2>
+                    <ul>
+                        <li><a href="/admin/migu/mobileservice/">手机接口列表</a></li>
+                        <li><a href="/admin/migu/tvservice/">电视版接口列表</a></li>
+                        <li><a href="/admin/migu/pluginservice/">手机插件接口列表</a></li>
+                        <li><a href="/admin/migu/openservice/">开放平台接口列表</a></li>
+                    </ul>
+                </div>
+                <div class="sidebar-module sidebar-module-inset">
+                    <h2>其他</h2>
+                    <ul>
+                        <li><a href="/admin/migu/server/">接口地址列表</a></li>
+                        <li><a href="/admin/migu/result/">执行结果</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock page_content %}
+
+{% block custom_js %}
+<script type="text/javascript">
+<!--
+/**
+ * Created by ryan on 2015/7/19.
+ * 初始化ajax
+ */
+
+// var csrftoken = $.cookie('csrftoken');
+var csrftoken = "{{ csrf_token }}";
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+$.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    },
+    async: true,
+    global: false,
+    type: "POST",
+    timeout: 1000
+});
+
+function getSuggestServices(formid) {
+    console.log(formid);
+    $.ajax({
+        url: "/migu/ajax/services/",
+        data: {
+            service: $("#" + formid + " #" + formid + "Service").val()
+        },
+        dataType: "json",
+        success: function(json) {
+            console.log(json);
+            if (json.length == 1) {
+                getSuggestData(formid)
+            } else {
+                $("#" + formid + " #" + formid + "Data").val(JSON.stringify(json, undefined, 4));
+            }
+        },
+        error: function(json) {
+            console.log(json);
+            $("#" + formid + " #" + formid + "Data").val("{}");
+        }
+    });
+}
+
+function getSuggestData(formid) {
+    console.log(formid);
+    $.ajax({
+        url: "/migu/ajax/service/data/",
+        data: {
+            version: $("#" + formid + " #" + formid + "Version").val(),
+            service: $("#" + formid + " #" + formid + "Service").val()
+        },
+        dataType: "json",
+        success: function(json) {
+            console.log(json);
+            $("#" + formid + " #" + formid + "Data").val(JSON.stringify(json, undefined, 4));
+        },
+        error: function(json) {
+            console.log(json);
+            $("#" + formid + " #" + formid + "Data").val("{}");
+        }
+    });
+}
+//-->
+</script>
+{% endblock custom_js %}

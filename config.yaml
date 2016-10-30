@@ -1,0 +1,35 @@
+name: djtestframework
+version: 1000
+
+libraries:
+- name: "django"
+  version: "1.8.3"
+
+- name: "MySQLdb"
+  version: "1.2.3"
+
+- name: "PyCrypto"
+  version: "2.6"
+
+- name: "lxml"
+  version: "2.3.4"
+
+handlers:
+- url: /static
+  static_dir: mysite/static
+
+- url: /media
+  static_dir: mysite/media
+
+- url: /temp
+  static_dir: mysite/temp
+
+- url: /static/
+  gzip: on
+  static_path: static
+
+- url: /robots.txt
+  static_path: robots.txt
+
+- url: /favicon.ico
+  static_path: favicon.ico

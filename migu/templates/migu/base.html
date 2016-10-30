@@ -1,0 +1,76 @@
+<!DOCTYPE html>{% load static from staticfiles %}
+<html lang="{{ LANGUAGE_CODE|default:"zh-cn" }}" {% if LANGUAGE_BIDI %}dir="rtl" {% endif %}>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="renderer" content="webkit">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="author" content="仲夏叶，Ryan Stornado">
+    <meta name="keywords" content="仲夏园，仲夏叶，科技，接口，测试">
+    <meta name="description" content="{% block page_description %}生命就是用求知的欲望燃烧自己{% endblock page_description %}">
+    <link rel="shortcut icon" href="{% static "favicon.ico" %}">
+    <link rel="icon" type="image/icon" href="{% static "favicon.ico" %}">
+    <title>{% block page_title %}{{ page_title }}{% endblock page_title %}</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap-theme.min.css" %}">
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" href="{% static "bootstrap/custom/fixed-top.css" %}">
+    <link rel="stylesheet" href="{% static "bootstrap/custom/sticky-footer.css" %}">
+    {% block custom_styles_css %}{% endblock custom_styles_css %}
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="{% static "html5shiv/html5shiv.min.js" %}"></script>
+    <script src="{% static "respond/respond.min.js" %}"></script>
+    <![endif]-->
+    <script src="{% static "bootstrap/custom/fixed-top.js" %}"></script>
+    <script src="{% static "bootstrap/custom/select-input.js" %}"></script>
+</head>
+<body>
+{% block page_header %}
+    <nav class="navbar navbar-default navbar-fixed-top navbar-inverse">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-navbar-collapse" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="{% block page_brand_url %}/{% endblock page_brand_url %}" class="navbar-brand">
+                    {% block page_brand_title %}仲夏园{% endblock page_brand_title %}
+                </a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-navbar-collapse">
+                {% block navbar_collapse %}{% endblock navbar_collapse %}
+            </div>
+        </div>
+    </nav>
+{% endblock page_header %}
+{% block page_content %}
+    <div class="container"></div>
+{% endblock page_content %}
+{% block page_footer %}
+    <footer class="footer">
+        <div class="container">
+            <p class="text-muted">仲夏园&nbsp;&#124;&nbsp;科技&nbsp;&copy;&nbsp;2015.&nbsp;All&nbsp;Rights&nbsp;Reserved.</p>
+
+            <div style="display:none">
+                <script type="text/javascript">
+                    var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+                    document.write(unescape("%3Cspan id='cnzz_stat_icon_1254452804'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1254452804%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+                </script>
+            </div>
+        </div>
+    </footer>
+{% endblock page_footer %}
+<!-- Bootstrap core JavaScript -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="{% static "jquery/jquery.min.js" %}"></script>
+<script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+{% block custom_js %}{% endblock custom_js %}
+</body>
+</html>

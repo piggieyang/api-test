@@ -1,0 +1,163 @@
+{% extends "migu/base_site.html" %}
+
+{% block navbar_collapse %}
+            <ul class="nav navbar-nav">
+                <li><a href="/admin/migu/module/">模块列表</a></li>
+                <li><a href="/admin/migu/module/">增加模块</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/migu/multi/">批量测试</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">下载<span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenuDivider">
+                        <li class="dropdown-header">Python脚本</li>
+                        <li><a href="/migu/download/python/?model=mobile">手机版接口</a></li>
+                        <li><a href="/migu/download/python/?model=tv">电视版接口</a></li>
+                        <li><a href="/migu/download/python/?model=plugin">插件接口</a></li>
+                        <li><a href="/migu/download/python/?model=open">开放平台接口</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">Jmeter测试计划</li>
+                        <li><a href="/migu/download/jmeter/?model=mobile">手机版接口</a></li>
+                        <li><a href="/migu/download/jmeter/?model=tv">电视版接口</a></li>
+                        <li><a href="/migu/download/jmeter/?model=plugin">插件接口</a></li>
+                        <li><a href="/migu/download/jmeter/?model=open">开放平台接口</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">数据表</li>
+                        <li><a href="/migu/download/sql/?model=mobile">手机版接口</a></li>
+                        <li><a href="/migu/download/sql/?model=tv">电视版接口</a></li>
+                        <li><a href="/migu/download/sql/?model=plugin">插件接口</a></li>
+                        <li><a href="/migu/download/sql/?model=open">开放平台接口</a></li>
+                        <li><a href="/migu/download/sql/results/">测试结果</a></li>
+                    </ul>
+                </li>
+            </ul>
+{% endblock navbar_collapse %}
+
+{% block page_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h1>咪咕爱唱组合接口测试</h1>
+                <p class="help-block">未输入接口版本，且接口有重名时，优先匹配低版本接口</p>
+                <p class="help-block">输入接口时建议按"service(version)"格式输入，如："login(2.0)"</p>
+                <div id="module-form" class="well">
+                    <form action="/migu/module/result/" method="POST" id="module">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="mduleServer">接口地址</label>
+                            <select name="server" id="mduleServer">
+                                {% for server in servers %}
+                                    <option id="server{{ server.id }}" value="{{ server.id }}">{{ server.name }}</option>
+                                {% empty %}
+                                    <option>请先添加接口地址</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="mduleModule">模块名称</label>
+                            <select name="module" id="mduleModule" onchange="getModule()">
+                                {% for module in modules %}
+                                    <option id="module{{ module.id }}" value="{{ module.id }}">
+                                        {{ module.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <button type="button" class="btn btn-default" onclick="getModule()">获取模块默认值</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="mduleService">接口列表</label>
+                            <textarea class="form-control" rows="10" name="services" id="mduleService" placeholder="请输入接口列表..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="mduleParam">接口参数</label>
+                            <button type="button" class="btn btn-default" onclick="getServiceData()">获取接口默认值</button>
+                            <textarea class="form-control" rows="10" name="params" id="mduleParam" placeholder="请输入个接口参数..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-default">提交</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="sidebar-module sidebar-module-inset">
+                    <h2>接口管理</h2>
+                    <ul>
+                        <li><a href="/admin/migu/mobileservice/">手机接口列表</a></li>
+                        <li><a href="/admin/migu/tvservice/">电视版接口列表</a></li>
+                        <li><a href="/admin/migu/pluginservice/">手机插件接口列表</a></li>
+                        <li><a href="/admin/migu/openservice/">开放平台接口列表</a></li>
+                    </ul>
+                </div>
+                <div class="sidebar-module sidebar-module-inset">
+                    <h2>其他</h2>
+                    <ul>
+                        <li><a href="/admin/migu/server/">接口地址列表</a></li>
+                        <li><a href="/admin/migu/result/">执行结果</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock page_content %}
+
+{% block custom_js %}
+<script>
+<!--//
+var csrftoken = "{{ csrf_token }}";
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+$.ajaxSetup({
+    beforeSend: function (xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    },
+    async: true,
+    global: false,
+    type: "POST",
+    timeout: 1000
+});
+
+function getModule() {
+    $.ajax({
+        url: "/migu/ajax/module/services/params/",
+        data: {
+            module: $("#mduleModule").val()
+        },
+        dataType: "json",
+        success: function(json) {
+            console.log(json);
+            $("#mduleService").val(JSON.stringify(json.services, undefined, 4));
+            $("#mduleParam").val(JSON.stringify(json.params, undefined, 4));
+        },
+        error: function(json) {
+            console.log(json);
+            $("#mduleService").val("[]");
+            $("#mduleParam").val("{}");
+        }
+    });
+}
+
+function getServiceData() {
+    $.ajax({
+        url: "/migu/ajax/multi/services/params/",
+        data: {
+            services: $("#mduleService").val()
+        },
+        dataType: "json",
+        success: function(json) {
+            console.log(json);
+            $("#mduleParam").val(JSON.stringify(json, undefined, 4));
+        },
+        error: function(json) {
+            console.log(json);
+            $("#mduleParam").val("{}");
+        }
+    });
+}
+//-->
+</script>
+{% endblock custom_js %}
