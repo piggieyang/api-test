@@ -7,7 +7,7 @@ from django.db import models
 
 
 class MiguServiceBase(models.Model):
-    """咪咕爱唱接口模板"""
+    """接口模板"""
 
     name = models.CharField(verbose_name='接口名称', max_length=50)
     version = models.CharField(
@@ -30,7 +30,7 @@ class MiguServiceBase(models.Model):
 
 
 class MobileService(MiguServiceBase):
-    '''咪咕爱唱手机版接口'''
+    '''手机版接口'''
 
     class Meta(MiguServiceBase.Meta):
         verbose_name = '手机版接口'
@@ -39,7 +39,7 @@ class MobileService(MiguServiceBase):
 
 
 class TVService(MiguServiceBase):
-    '''咪咕爱唱电视版接口'''
+    '''电视版接口'''
 
     class Meta(MiguServiceBase.Meta):
         verbose_name = 'TV版接口'
@@ -48,7 +48,7 @@ class TVService(MiguServiceBase):
 
 
 class PluginService(MiguServiceBase):
-    '''咪咕爱唱插件接口'''
+    '''插件接口'''
 
     class Meta(MiguServiceBase.Meta):
         verbose_name = '插件接口'
@@ -57,7 +57,7 @@ class PluginService(MiguServiceBase):
 
 
 class OpenService(MiguServiceBase):
-    '''咪咕爱唱开放平台接口'''
+    '''开放平台接口'''
 
     class Meta(MiguServiceBase.Meta):
         verbose_name = '开放平台接口'
@@ -66,7 +66,7 @@ class OpenService(MiguServiceBase):
 
 
 class Server(models.Model):
-    '''咪咕爱唱服务器配置'''
+    '''服务器配置'''
 
     name = models.CharField(verbose_name='接口地址名称', max_length=50)
     address = models.CharField(verbose_name='接口地址', max_length=255)
@@ -95,7 +95,7 @@ class Server(models.Model):
 
 
 class Result(models.Model):
-    """咪咕爱唱接口测试结果"""
+    """接口测试结果"""
 
     server = models.ForeignKey(to=Server, verbose_name='环境',
                                null=True)  # 测试后可以删除环境保存结果
@@ -125,7 +125,7 @@ class Result(models.Model):
 
 
 class Module(models.Model):
-    '''咪咕爱唱组合接口模块'''
+    '''组合接口模块'''
 
     name = models.CharField(verbose_name='模块名称', max_length=50)
     service_list = models.TextField(verbose_name='接口列表', default='[]')
