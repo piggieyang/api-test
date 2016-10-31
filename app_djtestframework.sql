@@ -1,7 +1,7 @@
 /*
 Navicat MariaDB Data Transfer
 
-Source Server         : app_djtestframework
+Source Server         : app_djtestframe
 Source Server Version : 100018
 Source Host           : localhost:3306
 Source Database       : app_djtestframework
