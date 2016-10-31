@@ -37,7 +37,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
     'log',
     'migu',
 )
@@ -84,10 +83,10 @@ try:
     from sae.const import MYSQL_PASS
     from sae.const import MYSQL_DB
 except ImportError:
-    MYSQL_HOST = '127.0.0.1'
+    MYSQL_HOST = '172.16.254.17'
     MYSQL_PORT = '3306'
     MYSQL_USER = 'root'
-    MYSQL_PASS = 'asdflkj@25677'
+    MYSQL_PASS = 'qazwsxcv,.'
     MYSQL_DB = 'piggie'
 
 DATABASES = {
